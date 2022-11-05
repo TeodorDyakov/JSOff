@@ -13,6 +13,10 @@ public class JSONobject {
         return children.get(key);
     }
 
+    public Object getValue(Integer index){
+        return children.get(index);
+    }
+
     @Override
     public String toString() {
         return "JSONobject{" +
