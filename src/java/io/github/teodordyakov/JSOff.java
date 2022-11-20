@@ -4,6 +4,7 @@ public class JSOff {
 
     //VAL and KEY represent literal values and keys
     enum STATE {
+        STRING_VALUE,
         VALUE,
         KEY,
         AFTER_VAL,
