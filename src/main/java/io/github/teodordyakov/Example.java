@@ -32,7 +32,6 @@ public class Example {
                 "}}";
         JSONobject jsoNobject = parse(example);
         JSONobject widget = (JSONobject) jsoNobject.getValue("widget");
-        System.out.println(widget);
         System.out.println(widget.getValue("debug"));
         int hOffset = (int) ((JSONobject) widget.getValue("image")).getValue("hOffset");
         System.out.println(hOffset);
@@ -60,13 +59,5 @@ public class Example {
                 "    }\n" +
                 "}";
         parse(example2).print();
-        String s3 = "{\"cat\" : {\"cat\" : {\"cat\" : {\"cat\" : \"dog\"}}}}";
-        JSONobject obj = parse(s3);
-//        System.out.println(parse(example));
-        parse(s3).print("", obj);
-        System.out.println(obj);
-        widget.print();
-        obj.print();
-
     }
 }
