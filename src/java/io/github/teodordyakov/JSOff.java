@@ -19,8 +19,9 @@ public class JSOff {
 
         String currKey = "";
         String currVal = "";
+        String currString = "";
 
-        boolean isString = false;
+        StringStateMachine stateMachine = new StringStateMachine();
 
         for (char c : s.toCharArray()) {
             if (state == STATE.BEFORE_KEY) {
@@ -28,7 +29,9 @@ public class JSOff {
                     state = STATE.KEY;
                 }
             } else if (state == STATE.KEY) {
-                if (c == '"') {
+                stateMachine.feedChar(c);
+                if (stateMachine.getState().equals(StringStateMachine.State.END)) {
+                    stateMachine = new StringStateMachine();
                     state = STATE.AFTER_KEY;
                 } else {
                     currKey += c;
@@ -60,18 +63,31 @@ public class JSOff {
                         state = STATE.BEFORE_KEY;
                     }
                 } else if (c == '"') {
-                    state = STATE.VALUE;
-                    isString = true;
+                    state = STATE.STRING_VALUE;
+                    stateMachine = new StringStateMachine();
                 } else if (c == '-' || c == 't' || c == 'f' || c == 'n' || (c <= '9' && c >= '0')) {
                     currVal += c;
                     state = STATE.VALUE;
                 }
+            } else if(state == STATE.STRING_VALUE) {
+                stateMachine.feedChar(c);
+                if (stateMachine.getState().equals(StringStateMachine.State.END)){
+                    state = STATE.AFTER_VAL;
+                    if (!curr.isArray) {
+                        curr.children.put(currKey, currString);
+                    } else {
+                        curr.children.put(curr.arrIdx++, currString);
+                    }
+                    currKey = "";
+                    currString = "";
+                    stateMachine = new StringStateMachine();
+                }else {
+                    currString += c;
+                }
             } else if (state == STATE.VALUE) {
-                if (c == '"' || c == '}' || c == ']' || Character.isWhitespace(c) || c == ',') {
+                if (c == '}' || c == ']' || Character.isWhitespace(c) || c == ',') {
                     Object val = null;
-                    if (isString) {
-                        val = currVal;
-                    } else if (currVal.equals("false") || currVal.equals("true")) {
+                    if (currVal.equals("false") || currVal.equals("true")) {
                         val = Boolean.parseBoolean(currVal);
                     } else if (currVal.indexOf('.') != -1) {
                         val = Double.parseDouble(currVal);
@@ -83,12 +99,10 @@ public class JSOff {
                     } else {
                         curr.children.put(curr.arrIdx++, val);
                     }
-
-                    isString = false;
                     currKey = "";
                     currVal = "";
 
-                    if (c == '"' || Character.isWhitespace(c) || c == ',') {
+                    if (Character.isWhitespace(c) || c == ',') {
                         state = STATE.AFTER_VAL;
                         if (c == ',') {
                             if (curr.isArray) {
