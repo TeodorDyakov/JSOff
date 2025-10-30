@@ -9,12 +9,48 @@ public class JSONobject {
     boolean isArray = false;
     int arrIdx = 0;
 
-    public Object getValue(String key) {
-        return children.get(key);
+    public int getSize() {
+        return children.size();
     }
 
-    public Object getValue(Integer index) {
-        return children.get(index);
+    public String getStringFromArray(int index) {
+        return (String) children.get(index);
+    }
+
+    public JSONobject getObjectFromArray(int index) {
+        return (JSONobject) children.get(index);
+    }
+
+    public Double getDoubleFromArray(int index) {
+        return (Double) children.get(index);
+    }
+
+    public Integer getIntFromArray(int index) {
+        return (Integer) children.get(index);
+    }
+
+    public Boolean getBooleanFromArray(int index) {
+        return (Boolean) children.get(index);
+    }
+
+    public String getString(String key) {
+        return (String) children.get(key);
+    }
+
+    public Integer getInt(String key) {
+        return (Integer) children.get(key);
+    }
+
+    public Double getDouble(String key) {
+        return (Double) children.get(key);
+    }
+
+    public Boolean getBoolean(String key) {
+        return (Boolean) children.get(key);
+    }
+
+    public JSONobject getObject(String key) {
+        return (JSONobject) children.get(key);
     }
 
     @Override
@@ -26,7 +62,7 @@ public class JSONobject {
                 '}';
     }
 
-    public void print(String offset, JSONobject root) {
+    public static void print(String offset, JSONobject root) {
 
         System.out.print((root.isArray ? "[" : "{") + "\n");
         int size = root.children.entrySet().size();
@@ -46,15 +82,14 @@ public class JSONobject {
                     System.out.print(child);
                 }
             }
-            if(++idx < size) {
+            if (++idx < size) {
                 System.out.println(",");
             }
         }
         System.out.print("\n" + offset + (root.isArray ? "]" : "}"));
     }
 
-    public void print(){
+    public void print() {
         print("", this);
     }
 }
-

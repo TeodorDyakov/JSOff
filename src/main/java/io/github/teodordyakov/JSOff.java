@@ -2,7 +2,7 @@ package io.github.teodordyakov;
 
 public class JSOff {
 
-    //VAL and KEY represent literal values and keys
+    // VAL and KEY represent literal values and keys
     enum STATE {
         STRING_VALUE,
         VALUE,
@@ -13,7 +13,7 @@ public class JSOff {
         BEFORE_KEY,
     }
 
-    static JSONobject parse(String s) {
+    static JSONobject parse(String s) throws Exception {
         JSONobject curr = new JSONobject();
         STATE state = STATE.BEFORE_VAL;
 
@@ -27,6 +27,9 @@ public class JSOff {
             if (state == STATE.BEFORE_KEY) {
                 if (c == '"') {
                     state = STATE.KEY;
+                } else if (c == '}') {
+                    curr = curr.parent;
+                    state = STATE.AFTER_VAL;
                 }
             } else if (state == STATE.KEY) {
                 stateMachine.feedChar(c);
@@ -43,6 +46,9 @@ public class JSOff {
             } else if (state == STATE.BEFORE_VAL) {
                 if (Character.isWhitespace(c)) {
                     continue;
+                } else if (c == ']') {
+                    curr = curr.parent;
+                    state = STATE.AFTER_VAL;
                 } else if (c == '{' || c == '[') {
                     JSONobject child = new JSONobject();
                     child.parent = curr;
@@ -69,9 +75,9 @@ public class JSOff {
                     currVal += c;
                     state = STATE.VALUE;
                 }
-            } else if(state == STATE.STRING_VALUE) {
+            } else if (state == STATE.STRING_VALUE) {
                 stateMachine.feedChar(c);
-                if (stateMachine.getState().equals(StringStateMachine.State.END)){
+                if (stateMachine.getState().equals(StringStateMachine.State.END)) {
                     state = STATE.AFTER_VAL;
                     if (!curr.isArray) {
                         curr.children.put(currKey, currString);
@@ -81,7 +87,7 @@ public class JSOff {
                     currKey = "";
                     currString = "";
                     stateMachine = new StringStateMachine();
-                }else {
+                } else {
                     currString += c;
                 }
             } else if (state == STATE.VALUE) {
@@ -120,6 +126,9 @@ public class JSOff {
                 }
             } else if (state == STATE.AFTER_VAL) {
                 if (c == '}' || c == ']') {
+                    if ((curr.isArray && c == '}') || (!curr.isArray && c == ']')) {
+                        throw new Exception("Malformed input");
+                    }
                     curr = curr.parent;
                 } else if (c == ',') {
                     if (!curr.isArray) {

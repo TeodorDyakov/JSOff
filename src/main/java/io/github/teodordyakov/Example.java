@@ -1,9 +1,7 @@
 package io.github.teodordyakov;
 
-import static io.github.teodordyakov.JSOff.parse;
-
 public class Example {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String example = "{\"widget\": {\n" +
                 "    \"debug\": \"on\",\n" +
                 "    \"window\": {\n" +
@@ -21,7 +19,7 @@ public class Example {
                 "    },\n" +
                 "    \"text\": {\n" +
                 "        \"data\": \"Click Here\",\n" +
-                "        \"size\": 36,\n" +
+                "        \"size\": {},\n" +
                 "        \"style\": \"bold\",\n" +
                 "        \"name\": \"text1\",\n" +
                 "        \"hOffset\": 250,\n" +
@@ -30,12 +28,12 @@ public class Example {
                 "        \"onMouseUp\": \"sun1.opacity = (sun1.opacity / 100) * 90;\"\n" +
                 "    }\n" +
                 "}}";
-        JSONobject jsoNobject = parse(example);
-        JSONobject widget = (JSONobject) jsoNobject.getValue("widget");
-        System.out.println(widget.getValue("debug"));
-        int hOffset = (int) ((JSONobject) widget.getValue("image")).getValue("hOffset");
+        JSONobject jsoNobject = JSOff.parse(example);
+        JSONobject widget = jsoNobject.getObject("widget");
+        System.out.println(widget.getString("debug"));
+        int hOffset = widget.getObject("image").getInt("hOffset");
         System.out.println(hOffset);
-
+        jsoNobject.print();
         String example2 = "{\n" +
                 "    \"glossary\": {\n" +
                 "        \"title\": \"example glossary\",\n" +
@@ -49,7 +47,8 @@ public class Example {
                 "\t\t\t\t\t\"Acronym\": \"SGML\",\n" +
                 "\t\t\t\t\t\"Abbrev\": \"ISO 8879:1986\",\n" +
                 "\t\t\t\t\t\"GlossDef\": {\n" +
-                "                        \"para\": \"A meta-markup language, used to create markup languages such as DocBook.\",\n" +
+                "                        \"para\": \"A meta-markup language, used to create markup languages such as DocBook.\",\n"
+                +
                 "\t\t\t\t\t\t\"GlossSeeAlso\": [\"GML\", \"XML\"]\n" +
                 "                    },\n" +
                 "\t\t\t\t\t\"GlossSee\": \"markup\"\n" +
@@ -58,6 +57,6 @@ public class Example {
                 "        }\n" +
                 "    }\n" +
                 "}";
-        parse(example2).print();
+        JSOff.parse(example2).print();
     }
 }
